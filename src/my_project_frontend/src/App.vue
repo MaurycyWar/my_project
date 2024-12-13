@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { my_project_backend } from 'declarations/my_project_backend/index';
 // let greeting = ref('');
 const rates = ref([]);
-const iloscWaluty = ref(0);
+const iloscWaluty = ref([]);
 
 const getDataFromNBP = async () => {
     const res = await fetch("https://api.nbp.pl/api/exchangerates/tables/A/?format=json");
@@ -11,11 +11,21 @@ const getDataFromNBP = async () => {
     console.log(jsonData);
     rates.value = jsonData[0].rates;
     console.log(rates);
+    iloscWaluty.value = rates.value.map(() => 0);
 }
 getDataFromNBP();
 
 const kupWalute = async (index) => {
+    const ilosc = BigInt(iloscWaluty.value);
+    const cena = BigInt(rates.value[index].mid * 10e16);
     console.log(rates.value[index]);
+
+    const koszt = await my_project_backend.calculate_currency_price(ilosc, cena);
+    console.log(koszt/BigInt(10e16));
+}
+
+const onChange = (e,index) => {
+    iloscWaluty.value[index] = e.target.value;
 }
 
 // async function handleSubmit(e) {
@@ -31,6 +41,7 @@ const kupWalute = async (index) => {
 <template>
     <main>
         <!-- <p>{{ rates }}</p> -->
+         {{iloscWaluty}}
 
         <table>
             <tr>
@@ -45,7 +56,7 @@ const kupWalute = async (index) => {
                 <td>{{ rate.code }}</td>
                 <td>{{ rate.mid }}</td>
                 <td>
-                    <input type="number" v-model="iloscWaluty">
+                    <input type="number" @change="(e) => onChange(e,index)">
                 </td>
                 <td>
                     <button @click="kupWalute(index)">Kup</button>
