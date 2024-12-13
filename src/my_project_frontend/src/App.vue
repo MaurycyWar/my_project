@@ -59,7 +59,6 @@ const onChange = (e,index) => {
                 <th>Kod waluty</th>
                 <th>Cena</th>
                 <th>Ilość waluty do zakupu</th>
-                <th></th>
             </tr>
             <tr v-for="(rate, index) in rates">
                 <td>{{ rate.currency }}</td>
@@ -68,11 +67,9 @@ const onChange = (e,index) => {
                 <td>
                     <input type="number" @change="(e) => onChange(e,index)" @keydown="(e) => onChange(e, index)">
                 </td>
-                <td>
-                    <button @click="kupWalute(index)">Kup</button>
-                </td>
             </tr>
         </table>
+        <button @click="kupWalute()">Kup</button>
 
         <!-- <img src="/logo2.svg" alt="DFINITY logo" />
     <br />
