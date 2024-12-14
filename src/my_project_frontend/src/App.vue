@@ -3,14 +3,14 @@ import { ref } from 'vue';
 import { my_project_backend } from 'declarations/my_project_backend/index';
 // let greeting = ref('');
 const rates = ref([]);
-const iloscWaluty = ref([]);
+const iloscWaluty = ref([0]);
 
 const getDataFromNBP = async () => {
     const res = await fetch("https://api.nbp.pl/api/exchangerates/tables/A/?format=json");
     const jsonData = await res.json();
     console.log(jsonData);
     rates.value = jsonData[0].rates;
-    console.log(rates);
+    console.log(rates.value);
     iloscWaluty.value = rates.value.map(() => 0);
 }
 getDataFromNBP();
@@ -25,17 +25,17 @@ const calculateCost = async (iloscWaluty,index) => {
 
 const kupWalute = async () => {
     const koszta = await Promise.all(iloscWaluty.value.map((ilosc,index) => calculateCost(ilosc,index)));
+    console.log(koszta);
     const sum = koszta.reduce(
         (al, val) => {
-            al + val
-        },
-        0n
+            return al + val;
+        }
     )
     console.log(sum);
 }
 
 const onChange = (e,index) => {
-    iloscWaluty.value[index] = e.target.value;
+    iloscWaluty.value[index] = parseInt(e.target.value);
 }
 
 // async function handleSubmit(e) {
@@ -65,7 +65,7 @@ const onChange = (e,index) => {
                 <td>{{ rate.code }}</td>
                 <td>{{ rate.mid }}</td>
                 <td>
-                    <input type="number" @change="(e) => onChange(e,index)" @keydown="(e) => onChange(e, index)">
+                    <input type="number" @change="(e) => onChange(e,index)" @keyup="(e) => onChange(e, index)">
                 </td>
             </tr>
         </table>
